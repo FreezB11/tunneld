@@ -8,24 +8,29 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-//ServerConfig is the top-level shape of tunneld's YAML config file
+// ServerConfig is the top-level shape of tunneld's YAML config file.
 type ServerConfig struct {
-	//ListenAddr is where the control connection (client dial-in) listens,
-	//e.g. "0.0.0.0:7000".
+	// ListenAddr is where the control connection (client dial-in) listens,
+	// e.g. "0.0.0.0:7000".
 	ListenAddr string `yaml:"listen_addr"`
-	//TLS holds the certificate/key used for the control connection
-	//If both are empty, tunneld generates a self-signed cert at startup and logs its
-	//fingerprint so the client can pin it
+
+	// TLS holds the certificate/key used for the control connection.
+	// If both are empty, tunneld generates a self-signed cert at startup
+	// (fine for IP-only setups without a real domain) and logs its
+	// fingerprint so the client can pin it.
 	TLS TLSConfig `yaml:"tls"`
-	// AuthTokens is the set of bearer tokens accepted from clients
+
+	// AuthTokens is the set of bearer tokens accepted from clients.
 	AuthTokens []string `yaml:"auth_tokens"`
-	//AllowedPortRange restricts which remote ports clients may request,
-	//so a compromised/misbehaving client can't bind arbitrary ports on
-	//your EC2 box (e.g. 22, or something already in use)
+
+	// AllowedPortRange restricts which remote ports clients may request,
+	// so a compromised/misbehaving client can't bind arbitrary ports on
+	// your EC2 box (e.g. 22, or something already in use).
 	AllowedPortRange PortRange `yaml:"allowed_port_range"`
-	//ACL is the single, global access-control rule set applied to all
-	//tunnels (v1 deliberately has no per-tunnel overrides - coz i am assuming that if 
-	// we block say a ip then it must a bad ip(threat) so yea.)
+
+	// ACL is the single, global access-control rule set applied to all
+	// tunnels (v1 deliberately has no per-tunnel overrides - see design
+	// notes in README).
 	ACL ACLConfig `yaml:"acl"`
 }
 
