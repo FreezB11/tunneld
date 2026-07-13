@@ -3,3 +3,5 @@
 *.log
 tunneld.yml
 tunnel.yml
+*.tmp
+record.mp4
