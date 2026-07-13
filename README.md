@@ -1,4 +1,4 @@
-# tunneld
+# tunneld⛩️
 tunneld is a tunnel service that use aws(`t3.micro`) for helping you get your project or site to the public, tho we dont yet have custom domain or smtg but you can use the public ip of aws instance.
 
 the plan is that we have `.yml` for both `t_server` and `t_client` configuration
