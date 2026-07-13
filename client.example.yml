@@ -1,0 +1,38 @@
+# tunnel client config — runs on your local machine.
+#
+# Copy this to tunnel.yml, edit the values below, then run:
+#   ./tunnel -config tunnel.yml
+
+# Your EC2 instance's public IP (or domain, once you have one) and the
+# control port from tunneld.yml's listen_addr.
+server: "203.0.113.10:7000"
+
+# Must match one entry in the server's auth_tokens.
+auth_token: "CHANGE-ME-same-value-as-server-auth_tokens"
+
+# Cosmetic - shows up in tunneld's logs.
+client_name: "my-laptop"
+
+# Paste the fingerprint tunneld printed on startup here. This lets the
+# client trust the server's self-signed certificate safely (verifies it's
+# talking to the right server) without needing a real CA-signed cert.
+#
+# Leave blank + set insecure_skip_verify: true instead ONLY for local
+# testing - that disables all TLS verification and is not safe over the
+# open internet.
+server_fingerprint: ""
+insecure_skip_verify: false
+
+# One entry per local service you want to expose. remote_port must fall
+# inside the server's allowed_port_range.
+tunnels:
+  - name: "web"
+    type: "http"          # "http" or "tcp" - see README for the difference
+    local_addr: "127.0.0.1:3000"
+    remote_port: 8080
+
+  # Example second tunnel, e.g. exposing SSH:
+  # - name: "ssh"
+  #   type: "tcp"
+  #   local_addr: "127.0.0.1:22"
+  #   remote_port: 8022

@@ -1,0 +1,50 @@
+# tunneld server config — runs on your EC2 instance.
+#
+# Copy this to tunneld.yml, edit the values below, then run:
+#   ./tunneld -config tunneld.yml
+
+# Address the control port listens on. Clients dial this to register
+# tunnels. 0.0.0.0 so it's reachable from the internet (your EC2 security
+# group still needs to allow inbound TCP on this port).
+listen_addr: "0.0.0.0:7000"
+
+# TLS certificate for the control connection. Leave both blank to have
+# tunneld generate a self-signed certificate at startup - it will print a
+# fingerprint you should copy into your client's tunnel.yml as
+# server_fingerprint, so the client can verify it's really your server
+# without needing a real CA-signed cert or a domain name.
+tls:
+  cert_file: ""
+  key_file: ""
+
+# One or more bearer tokens clients may authenticate with. Generate a
+# strong one, e.g.: openssl rand -hex 32
+# You can list multiple tokens (e.g. one per machine) and revoke one by
+# removing it here and restarting tunneld.
+auth_tokens:
+  - "CHANGE-ME-generate-with-openssl-rand-hex-32"
+
+# Clients may only request remote ports inside this range. Keeps a
+# misbehaving or compromised client from binding a port you didn't intend
+# to expose (e.g. one already used by SSH, or a port you plan to use for
+# something else).
+allowed_port_range:
+  min: 8000
+  max: 9000
+
+# Global access control for all exposed tunnel ports (v1 applies these
+# rules to every tunnel uniformly - see README for rationale).
+#
+# Evaluation order: deny_cidrs is checked first and always wins. If
+# allow_cidrs is non-empty, an IP must ALSO match one of those entries to
+# be let through. If allow_cidrs is empty, anything not denied is allowed.
+acl:
+  # Example: only let your home/office IP reach your tunnels.
+  # allow_cidrs:
+  #   - "203.0.113.42/32"
+  allow_cidrs: []
+
+  # Example: block a known-bad range.
+  # deny_cidrs:
+  #   - "198.51.100.0/24"
+  deny_cidrs: []
