@@ -6,15 +6,19 @@ import (
 	"errors"
 )
 
-//TokenAuthenticator authenticates clients against a static set of
-//pre-shared bearer tokens (typically loaded from the server's YAML config)
-//the auth method was ment to be simple as this is like a personal project in base phase
+// TokenAuthenticator authenticates clients against a static set of
+// pre-shared bearer tokens (typically loaded from the server's YAML config).
+//
+// This is the v1 auth mechanism: simple, no PKI to manage, good enough for
+// "a couple of tunnels I run myself". Comparison against every configured
+// token is constant-time to avoid leaking timing information about which
+// prefix of a token matched.
 type TokenAuthenticator struct {
 	tokens map[string]struct{}
 }
 
-//NewTokenAuthenticator builds a TokenAuthenticator from a list of valid
-//tokens (as loaded from config), empty/whitespace-only tokens are ignored
+// NewTokenAuthenticator builds a TokenAuthenticator from a list of valid
+// tokens (as loaded from config). Empty/whitespace-only tokens are ignored.
 func NewTokenAuthenticator(tokens []string) *TokenAuthenticator {
 	set := make(map[string]struct{}, len(tokens))
 	for _, t := range tokens {
@@ -35,8 +39,9 @@ func (a *TokenAuthenticator) Authenticate(_ context.Context, credential string, 
 	}
 	credBytes := []byte(credential)
 	for known := range a.tokens {
-		// subtle.ConstantTimeCompare requires equal-length slices
-		// (lengths aren't secret), so a fast-path length check is fine
+		// subtle.ConstantTimeCompare requires equal-length slices; a
+		// length mismatch is itself not exploitable timing info (lengths
+		// aren't secret), so a fast-path length check is fine.
 		if len(known) != len(credBytes) {
 			continue
 		}
